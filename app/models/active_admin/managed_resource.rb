@@ -18,6 +18,18 @@ module ActiveAdmin
       class_name == "ActiveAdmin::Page"
     end
 
+    def self.ransackable_attributes(_auth = nil)
+      column_names + _ransackers.keys
+    end
+
+    def self.ransackable_associations(_auth = nil)
+      reflect_on_all_associations.map { |a| a.name.to_s }
+    end
+
+    def self.ransortable_attributes(_auth = nil)
+      ransackable_attributes
+    end
+
     class << self
       def reload
         ActiveAdmin::PermissionReloader.reload

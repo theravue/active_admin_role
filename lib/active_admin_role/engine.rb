@@ -4,15 +4,16 @@ require "active_admin_role/active_admin/dsl"
 
 module ActiveAdminRole
   class Engine < ::Rails::Engine
-    initializer "active_admin_role" do
-      ActiveSupport.on_load :active_record do
-        extend ActiveAdminRole::Dsl
-      end
-
-      ActiveSupport.on_load :after_initialize do
-        require "active_admin_role/active_admin/resource_controller"
-        ::ActiveAdmin::ResourceController.send :include, ActiveAdminRole::ActiveAdmin::ResourceController
+    initializer "active_admin_role.dsl", after: "active_admin.load" do
+      require "active_admin_role/dsl"
+      if defined?(ActiveAdminRole::Dsl)
+        [defined?(ActiveAdmin::DSL) ? ActiveAdmin::DSL : nil,
+         defined?(ActiveAdmin::ResourceDSL) ? ActiveAdmin::ResourceDSL : nil,
+         defined?(ActiveAdmin::PageDSL) ? ActiveAdmin::PageDSL : nil].compact.each do |klass|
+          klass.include ActiveAdminRole::Dsl unless klass < ActiveAdminRole::Dsl
+        end
       end
     end
   end
 end
+

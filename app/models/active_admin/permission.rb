@@ -44,6 +44,19 @@ module ActiveAdmin
         @indexed_cache = nil
       end
 
+    def self.ransackable_attributes(_auth = nil)
+      column_names + _ransackers.keys
+    end
+
+    def self.ransackable_associations(_auth = nil)
+      reflect_on_all_associations.map { |a| a.name.to_s }
+    end
+
+    # Optional: keep sorting behavior in sync
+    def self.ransortable_attributes(_auth = nil)
+      ransackable_attributes
+    end
+
       private
 
         def default_state
